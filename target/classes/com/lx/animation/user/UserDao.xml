@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lx.animation.user.UserDao">
+    <insert id="addUser">
+        INSERT INTO users (user, password, pic_url,reg_time) VALUES (#{user}, md5(#{password}), '/picture/txt.jpg',now())
+    </insert>
+    <select id="queryCountAll" resultType="int">
+        SELECT count(*)
+        FROM users
+    </select>
+    <select id="queryByState" resultType="int">
+        SELECT count(*)
+        FROM users
+        WHERE state = #{state}
+    </select>
+    <update id="updateByState">
+        UPDATE users
+        SET state = #{state}
+        WHERE user = #{user}
+    </update>
+    <select id="queryAllUser" resultType="com.lx.animation.user.User">
+        SELECT
+            user,
+            name,
+            pic_url,
+            hobby,
+            info,
+            state,
+            reg_time
+        FROM users
+    </select>
+    <select id="queryUserExist" resultType="int">
+        SELECT count(user)
+        FROM users
+        WHERE user = #{user}
+    </select>
+    <select id="queryAllUserByState" resultType="com.lx.animation.user.User">
+        SELECT
+            user,
+            name,
+            pic_url,
+            hobby,
+            info,
+            state,
+            reg_time
+        FROM users
+        WHERE state = #{state}
+    </select>
+    <select id="queryUser" resultType="com.lx.animation.user.User">
+        SELECT
+            user,
+            name,
+            pic_url,
+            hobby,
+            info,
+            state,
+            reg_time
+        FROM users
+        WHERE user = #{user} AND password = md5(#{password})
+    </select>
+    <update id="updatePic">
+        UPDATE users
+        SET pic_url = #{url}
+        WHERE user = #{user}
+    </update>
+    <select id="queryByUser" resultType="com.lx.animation.user.User">
+        SELECT
+            user,
+            name,
+            pic_url,
+            hobby,
+            info
+        FROM users
+        WHERE user = #{user}
+    </select>
+    <update id="updateInfo">
+        UPDATE users
+        SET name = #{name}, hobby = #{hobby}, info = #{info}
+        WHERE user = #{user}
+    </update>
+</mapper>

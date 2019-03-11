@@ -1,0 +1,32 @@
+.foot{
+    height: 200px;
+}
+.foot a{
+    color: #7a797c;
+}
+.foot a:hover{
+    color: #ff84bb;
+}
+.ui-repeater{
+    width: 800px;
+}
+.ui-repeater-item {
+    display:inline;
+}
+.icons{
+    width:  200px;
+}
+.icons-item{
+    white-space: nowrap;
+    box-sizing: border-box;
+    display:inline;
+}
+.icons li img{
+    width: 53px;
+    height: 53px;
+}
+.icons-item span{
+    position: relative;
+    display: block;
+    /*color: #7a797c;*/
+}

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <context:component-scan base-package="com.lx.animation.*"/>
+    <!-- 加载db.properties文件中的内容 中的key要有一定的规则 -->
+    <bean id="propertiesConfig" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:jdbc.properties</value>
+                <!--<value>classpath:redis.properties</value>-->
+            </list>
+        </property>
+    </bean>
+    <!-- 配置数据源 -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="${jdbc.driver}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+        <property name="defaultAutoCommit" value="${jdbc.defaultAutoCommit}"/>
+    </bean>
+    <!-- redis数据源 -->
+    <!--<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">-->
+        <!--<property name="maxIdle" value="${redisPool.maxIdle}"/>-->
+        <!--<property name="maxTotal" value="${redisPool.maxActive}"/>-->
+        <!--<property name="maxWaitMillis" value="${redisPool.maxWait}"/>-->
+        <!--<property name="testOnBorrow" value="${redisPool.testOnReturn}"/>-->
+    <!--</bean>-->
+    <!-- Spring-redis连接池管理工厂 -->
+    <!--<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"-->
+          <!--p:host-name="${redis.host}" p:port="${redis.port}" p:pool-config-ref="jedisPoolConfig"/>-->
+    <!--事务-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+    <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--注入数据库连接池-->
+        <property name="dataSource" ref="dataSource"/>
+        <!--配置全局mybatis.xml-->
+        <property name="configLocation" value="classpath:mybatis-config.xml"/>
+        <!--扫描entity包-->
+        <property name="typeAliases">
+            <array>
+                <value>com.lx.animation.adv.Adv</value>
+                <value>com.lx.animation.admin.Admin</value>
+                <value>com.lx.animation.video.Video</value>
+                <value>com.lx.animation.user.User</value>
+                <value>com.lx.animation.videolist.VideoList</value>
+                <value>com.lx.animation.article.Article</value>
+            </array>
+        </property>
+        <!--配置mapper-->
+        <property name="mapperLocations">
+            <array>
+                <value>classpath*:com/lx/animation/article/ArticleDao.xml</value>
+                <value>classpath*:com/lx/animation/user/UserDao.xml</value>
+                <value>classpath*:com/lx/animation/admin/AdminDao.xml</value>
+                <value>classpath*:com/lx/animation/videolist/VideoListDao.xml</value>
+                <value>classpath*:com/lx/animation/video/VideoDao.xml</value>
+                <value>classpath*:com/lx/animation/adv/AdvDao.xml</value>
+                <value>classpath*:com/lx/animation/webInfo/WebInfoDao.xml</value>
+            </array>
+        </property>
+        <!--//<property name="mapperLocations" value="classpath:mapper/*"/>-->
+
+    </bean>
+    <!--DAO接口所在包名，Spring会自动查找其下的类-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+        <property name="basePackage" value="com.lx.animation.*"/>
+        <property name="annotationClass" value="org.springframework.stereotype.Repository"/>
+    </bean>
+    <!--<bean id="UsersUtil" class="com.lx.animation.util.UsersUtil" scope="singleton"/>-->
+    <!--<bean id="transactionManager"-->
+    <!--class="org.springframework.jdbc.datasource.DataSourceTransactionManager">-->
+    <!--<property name="dataSource" ref="dataSource" />-->
+    <!--</bean>-->
+    <!--<bean id="aspectBean" class="com.lx.animation.Aspect.TestAspect"/>-->
+    <!--<aop:config>-->
+    <!--<aop:aspect id="TestAspect" ref="aspectBean">-->
+
+    <!--</aop:aspect>-->
+    <!--</aop:config>-->
+</beans>

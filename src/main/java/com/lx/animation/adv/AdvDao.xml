@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lx.animation.adv.AdvDao">
+    <resultMap id="advResult" type="com.lx.animation.adv.Adv">
+        <id column="id" jdbcType="INTEGER" property="id" javaType="java.lang.Integer"/>
+        <result column="type" jdbcType="INTEGER" property="type" javaType="java.lang.Integer"/>
+        <result column="pic_url" jdbcType="CHAR" property="picUrl" javaType="String"/>
+        <result column="info" jdbcType="CHAR" property="info" javaType="String"/>
+        <result column="rank" jdbcType="INTEGER" property="rank" javaType="java.lang.Integer"/>
+    </resultMap>
+    <insert id="addAdv" useGeneratedKeys="true" keyProperty="id"  parameterType="com.lx.animation.adv.Adv">
+        insert into adv(pic_url,type) VALUES(#{picUrl},0)
+    </insert>
+    <update id="updateAdv" parameterType="com.lx.animation.adv.Adv">
+        update adv
+        set info = #{info},
+            type = #{type},
+            rank = #{rank}
+        where id = #{id}
+    </update>
+    <update id="updateLogo">
+        update adv
+        set pic_url = #{picUrl}
+        where type = 1
+    </update>
+    <select id="queryLogoExist" resultType="int">
+        select count(*)
+        from adv
+        where type = 1
+    </select>
+    <select id="queryLogo" resultType="com.lx.animation.adv.Adv">
+        select pic_url, info, id
+        from adv
+        where type = 1;
+    </select>
+    <select id="updateLogoInfo" parameterType="java.lang.String">
+        update adv
+        set info = #{info}
+        where type = 1
+    </select>
+    <select id="queryAdvPicUrl" resultType="java.lang.String">
+        select pic_url
+        from adv
+        where id = #{id}
+    </select>
+    <select id="queryCarousel" resultType="com.lx.animation.adv.Adv">
+        select pic_url, info, id,rank
+        from adv
+        where type = 2
+        order by rank
+    </select>
+    <select id="deleteById">
+        delete
+        from adv
+        where id = #{id}
+    </select>
+    <select id="queryAllAdv" resultType="com.lx.animation.adv.Adv">
+        select id, type, pic_url, rank, info
+        from adv
+    </select>
+    <select id="queryPicUrlByArrId" resultType="java.lang.String" parameterType="java.util.ArrayList">
+        select pic_url from adv where id in
+        <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <delete id="deleteByArrId" parameterType="java.util.ArrayList">
+        delete from adv where id in
+        <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <update id="updateById">
+        UPDATE FROM adv
+        set pic_url = #{picUrl}
+        where id = #{id}
+    </update>
+</mapper>

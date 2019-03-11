@@ -1,0 +1,67 @@
+.my-navbar {
+  transition: background 0.5s ease-in-out, padding 0.5s ease-in-out;
+}
+.my-navbar a{
+	background:transparent !important;
+	color: #000000!important;
+}
+.my-navbar a:hover {
+	color:#0000FF !important;
+	background:transparent;outline:0;
+}
+#information {
+	background-color: #eee;
+	padding: 20px 0;
+}
+.info-content {
+	background-color: #fff;
+	margin: 0 0 20px 0;
+	box-shadow: 2px 2px 3px #ccc;
+}
+.info-content img {
+	margin: 12px 0;
+}
+.info-content h4 {
+	color: #333;
+	padding: 2px 0 0 0;
+	font-size: 14px;
+}
+.info-content p {
+	line-height: 1.6;
+}
+.mod-cover{
+	position: relative;
+	display: block;
+	height: 22px;
+	margin-top: -22px;
+	background-color: rgba(0,0,0,0.6);
+	color: #fff;
+	text-align: right;
+}
+.info-right {
+	background-color: #fff;
+	box-shadow: 2px 2px 3px #ccc;
+}
+.edits b {
+	color: #999;
+}
+.edits p{
+	color: #999;
+}
+.info-right blockquote {
+	margin: 0;
+	padding: 0;
+}
+.info-right h2 {
+	font-size: 20px;
+	color: #333;
+	padding: 5px;
+}
+.info-right h4 {
+	color: #333;
+	font-size: 16px;
+	padding: 2px 0 0 0;
+	line-height: 1.6;
+}
+
+

@@ -1,0 +1,1 @@
+[02:19:50:752] [ERROR] - com.lx.animation.article.ArticleServiceImpl.getArticleList(ArticleServiceImpl.java:42) - articleDao.listByClick fail

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lx.animation.admin.AdminDao">
+    <insert id="addAdmin">
+        INSERT INTO admin (user, password)
+        VALUES (#{user}, md5(#{password}))
+    </insert>
+    <update id="updateLastTime">
+        UPDATE admin
+        SET last_time = now()
+        WHERE id = #{id}
+    </update>
+    <select id="queryAllAdmin" resultType="int">
+        SELECT count(*)
+        FROM admin
+    </select>
+    <select id="queryAdmin" resultType="com.lx.animation.admin.Admin">
+        SELECT id, user, password, last_time, now_ip, last_ip
+        FROM admin
+        WHERE user = #{user}
+          AND password = md5(#{password})
+    </select>
+    <update id="updateOnLogin">
+        UPDATE admin
+        SET last_time = now(),
+            last_ip   = #{lastIp},
+            now_ip    = #{nowIp}
+        WHERE id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lx.animation.videolist.VideoListDao">
+    <insert id="addList" parameterType="com.lx.animation.videolist.VideoList">
+        <selectKey resultType="int" order="AFTER" keyProperty="listId">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into video_list(title,pic_url,user) VALUE('${title}','${picUrl}','${user}')
+    </insert>
+    <update id="updateClick">
+        update video_list set click=click+1 where list_id=#{id} and user!=#{user}
+    </update>
+    <select id="queryPicUrl" resultType="java.lang.String">
+        update video_list set click=click+1 where list_id=#{id} and user!=#{user}
+    </select>
+    <select id="queryPicUrlById" resultType="java.lang.String">
+        select pic_url from video_list where list_id=#{id}
+    </select>
+    <update id="updateById" >
+        update video_list set title=#{title},pic_url=#{picUrl} where list_id=#{id}
+    </update>
+    <select id="queryById" resultType="com.lx.animation.videolist.VideoList">
+        select title,user,time,pic_url,click,list_id from video_list where list_id=#{id} and (`show`=1 or user=#{user}) and `delete`=0
+    </select>
+    <select id="queryByNew" resultType="com.lx.animation.videolist.VideoList" parameterType="int">
+        select l.list_id,l.title,l.time,l.pic_url,l.user,l.click,max(epi) as maxEpi from video_list as l left join (select * from video where video.`show`=1)as v on l.list_id=v.list_id where l.`show`=1 group by l.list_id,l.title,l.time,l.pic_url,l.user,l.click order by l.time desc limit #{limit}
+    </select>
+    <select id="queryByClick" resultType="com.lx.animation.videolist.VideoList">
+         select l.list_id,l.title,l.time,l.pic_url,l.user,l.click,max(epi) as maxEpi from video_list as l left join (select * from video where video.`show`=1) as v on l.list_id=v.list_id where l.`show`=1 group by l.list_id,l.title,l.time,l.pic_url,l.user,l.click order by l.click desc limit #{limit}
+    </select>
+    <select id="queryCountByUser" resultType="int">
+        select count(*) from video_list where user=#{user}
+    </select>
+    <select id="queryCountByShow" resultType="int">
+        select count(list_id) from video_list where `show`=#{show} and `delete`=0
+    </select>
+    <select id="queryByClickPage" resultType="com.lx.animation.videolist.VideoList">
+        select list_id,title,click,time,pic_url,user from video_list where `delete`=0 and `show`=1 order by click desc limit #{sPage},#{ePage}
+    </select>
+    <delete id="deleteByIdUser" >
+        delete from video_list where list_id=#{listId} and user=#{user}
+    </delete>
+    <select id="queryByNewPage" resultType="com.lx.animation.videolist.VideoList">
+        select list_id,title,click,time,pic_url,user from video_list where `delete`=0 and `show`=1 order by time desc limit #{sPage},#{ePage}
+    </select>
+    <select id="queryAllCountList" resultType="int">
+        select count(list_id) from video_list
+    </select>
+    <select id="queryByUserPage" resultType="com.lx.animation.videolist.VideoList">
+        select list_id,title,click,time,pic_url,user,`show` from video_list where user=#{user} limit #{sPage},#{ePage}
+    </select>
+    <select id="queryAllList" resultType="com.lx.animation.videolist.VideoList">
+        select l.list_id,l.title,l.time,l.pic_url,l.user,l.`delete`,l.`show`,l.click,countNew from video_list as l left join (select count(`show`) as countNew,list_id from video where `show`=0 group by list_id) as v  on l.list_id=v.list_id where `delete`=0
+    </select>
+    <update id="updateByIdShow" >
+        update video_list set `show`=#{show} where list_id=#{id}
+    </update>
+    <delete id="deleteById" >
+        delete from video_list where list_id=#{id}
+    </delete>
+    <select id="queryByShow" resultType="com.lx.animation.videolist.VideoList">
+         select l.list_id,l.title,l.time,l.pic_url,l.user,l.`delete`,l.`show`,l.click,countNew from video_list as l left join (select count(`show`) as countNew,list_id from video where `show`=0 group by list_id) as v  on l.list_id=v.list_id where `delete`=0 and `show`=#{show}
+    </select>
+</mapper>

@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lx.animation.article.ArticleDao">
+    <resultMap id="articleResult" type="com.lx.animation.article.Article">
+        <id column="id" jdbcType="BIGINT" property="id" javaType="java.math.BigInteger"/>
+        <result column="title" jdbcType="VARCHAR" property="title" javaType="String"/>
+        <result column="content" jdbcType="VARCHAR" property="content" javaType="String"/>
+        <result column="pic_url" jdbcType="VARCHAR" property="picUrl" javaType="String"/>
+        <result column="art_user" jdbcType="VARCHAR" property="artUser" javaType="String"/>
+        <result column="click" jdbcType="BIGINT" property="click" javaType="java.math.BigInteger"/>
+        <result column="pro_time" jdbcType="DATE" property="proTime" javaType="java.util.Date"/>
+        <result column="processor" jdbcType="VARCHAR" property="processor" javaType="String"/>
+        <result column="link_id" jdbcType="INTEGER" property="linkId" javaType="java.math.BigInteger"/>
+        <result column="gmt_create" jdbcType="DATE" property="gmtCreate" javaType="java.util.Date"/>
+        <result column="gmt_modified" jdbcType="DATE" property="gmtModified" javaType="java.util.Date"/>
+        <result column="link_time" jdbcType="DATE" property="linkTime" javaType="java.util.Date"/>
+        <result column="art_state" jdbcType="VARCHAR" property="artState" javaType="String"/>
+    </resultMap>
+    <select id="listArticleInfo" resultMap="articleResult">
+        SELECT id,
+               title,
+               pic_url,
+               art_user,
+               click,
+               pro_time,
+               processor,
+               link_id,
+               gmt_create,
+               gmt_modified,
+               link_time,
+               art_state
+        FROM article
+    </select>
+    <select id="listArticleAll" resultMap="articleResult">
+        SELECT article.id,
+               title,
+               content,
+               pic_url,
+               art_user,
+               click,
+               pro_time,
+               processor,
+               link_id,
+               gmt_create,
+               gmt_modified,
+               link_time,
+               art_state
+        FROM article
+                 JOIN art_content ON article.id = art_content.id
+
+    </select>
+    <insert id="addArticle" useGeneratedKeys="true" keyProperty="id" parameterType="com.lx.animation.article.Article">
+        INSERT INTO article (title, pic_url, art_user)
+        VALUES (#{title}, #{picUrl}, #{artUser})
+    </insert>
+    <insert id="addContent" useGeneratedKeys="true" keyProperty="linkId" parameterType="com.lx.animation.article.Article" >
+        INSERT INTO art_content (content)
+        VALUES  (#{content})
+    </insert>
+    <delete id="deleteById">
+        DELETE
+        FROM article
+        WHERE id = #{id}
+    </delete>
+    <delete id="deleteContentById">
+        DELETE
+        FROM art_content
+        WHERE id = #{id}
+    </delete>
+    <select id="getContentById" resultType="com.lx.animation.article.Article">
+        SELECT content
+        FROM art_content
+        WHERE id = #{id}
+    </select>
+
+    <update id="updateArticleStateToProcessing">
+        UPDATE article
+        SET processor = #{user},
+            art_state = 'processing',
+            link_time = now()
+        WHERE art_state = 'unprocessed'
+        LIMIT 5
+    </update>
+    <update id="updateArticleStateToUnprocessed">
+        UPDATE article
+        SET processor = '',
+            art_state = 'unprocessed'
+        WHERE art_state = 'processing'
+          AND DATE_SUB(current_timestamp(), INTERVAL 1 MINUTE) > link_time
+    </update>
+    <select id="listUnprocessedByProcessor" resultMap="articleResult">
+        SELECT id, title, pic_url, art_user, art_state
+        FROM article
+        WHERE processor = #{processor}
+          AND art_state = 'processing'
+    </select>
+    <update id="updateArticleState">
+        UPDATE article
+        SET art_state = #{state}
+        WHERE id = ${id}
+    </update>
+
+    <!--mark-->
+    <select id="getById" resultMap="articleResult">
+        SELECT art_user, title, content, click, gmt_create, pic_url
+
+        FROM article
+                 JOIN art_content ON article.id = art_content.id
+        WHERE id = ${id}
+          AND (art_user = #{user} OR
+               art_state = 'accept')
+    </select>
+    <select id="getByIdOnAdmin" resultMap="articleResult">
+        SELECT user, title, content, click, time, pic_url
+        FROM article
+        WHERE art_id = ${id}
+    </select>
+    <update id="updateClick">
+        UPDATE article
+        SET click = click + 1
+        WHERE art_id = #{id}
+          AND user != #{user}
+    </update>
+    <select id="countByUser" resultType="int">
+        SELECT count(*)
+        FROM article
+        WHERE user = #{user}
+    </select>
+    <select id="countByPageUser" resultType="com.lx.animation.article.Article">
+        SELECT art_id, title, content, click, time, pic_url, user
+        FROM article
+        WHERE user = #{user}
+          AND `status` != 'deleted'
+        LIMIT #{sPage}, #{ePage}
+    </select>
+    <!--makr-->
+    <select id="queryCountShow" resultType="int">
+        SELECT count(art_id)
+        FROM article
+        WHERE `status` = 'accept'
+    </select>
+    <select id="countByNoStatus" resultType="int">
+        SELECT COUNT(*)
+        FROM article
+        WHERE art_state != #{status}
+    </select>
+    <select id="countByStatus" resultType="int">
+        SELECT COUNT(*)
+        FROM article
+        WHERE art_state = #{status}
+    </select>
+    <!--makr-->
+    <select id="queryCountByClick" resultType="int">
+        SELECT count(*)
+        FROM article
+        WHERE `status` = 'accept'
+    </select>
+    <select id="listByClick" resultType="com.lx.animation.article.Article">
+        SELECT art_id, title, content, click, time, pic_url, user
+        FROM article
+        WHERE `delete` = 0
+          AND `show` = 1
+        ORDER BY click DESC
+        LIMIT 0, #{limit}
+    </select>
+    <select id="listByAllClick" resultType="com.lx.animation.article.Article">
+        SELECT art_id, title, content, click, time, pic_url, user
+        FROM article
+        WHERE `delete` = 0
+          AND `show` = 1
+        ORDER BY click DESC
+        LIMIT #{sPage}, #{ePage}
+    </select>
+    <select id="listAllArticle" resultType="int">
+        SELECT count(*)
+        FROM article
+    </select>
+    <select id="deleteByArrId" resultType="com.lx.animation.article.Article" parameterType="java.util.ArrayList">
+        delete from article where art_id in
+        <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <select id="queryByShow" resultType="com.lx.animation.article.Article">
+        SELECT art_id,
+               title,
+               click,
+               time,
+               pic_url,
+               user,
+               `show`,
+               `delete`
+        FROM article
+        WHERE `status` = ${status}
+    </select>
+    <select id="listByNoStatus" resultType="com.lx.animation.article.Article">
+        SELECT id, title, click, gmt_create, pic_url, art_user, art_state
+        FROM article
+        WHERE art_state != #{state}
+    </select>
+    <select id="listByStatus" resultType="com.lx.animation.article.Article">
+        SELECT id, title, click, gmt_create, pic_url, art_user, art_state
+        FROM article
+        WHERE art_state = #{state}
+    </select>
+    <update id="updateStatus">
+        UPDATE article
+        SET `show` = #{show}
+        WHERE art_id = #{id}
+    </update>
+    <!--make-->
+    <update id="updateDelete">
+        UPDATE article
+        SET `delete` = #{delete},
+            `show`   = 0
+        WHERE art_id = #{id}
+    </update>
+    <select id="listContentByArrId" resultType="java.lang.String">
+        select content from article where art_id in
+        <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <update id="updateByArrIdToDelete">
+        update article set `delete` =#{delete} where art_id in
+        <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>

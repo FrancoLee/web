@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lx.animation.video.VideoDao">
+    <insert id="addVideo" parameterType="com.lx.animation.video.Video">
+        <selectKey resultType="int" order="AFTER" keyProperty="vid">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into video(vid_url,list_id,user) value('${vidUrl}','${listId}','${user}')
+    </insert>
+    <update id="updateById">
+        update video set epi=#{epi},title=#{title} where vid=#{vid}
+    </update>
+    <select id="queryById" resultType="com.lx.animation.video.Video">
+        select * from video where vid=#{id} and `show`=1
+    </select>
+    <select id="queryUrlByListId" resultType="java.lang.String">
+        select vid_url from video where list_id=#{listId} and user=#{user}
+    </select>
+    <select id="queryUrlByIdUser" resultType="java.lang.String">
+        select vid_url from video where vid=#{vid} and user=#{user}
+    </select>
+    <select id="queryUrlById" resultType="java.lang.String">
+        select vid_url from video where vid=#{vid}
+    </select>
+    <delete id="deleteByIdUser">
+        delete from video where vid=#{vid} and user=#{user}
+    </delete>
+    <select id="queryByListIdEpi" resultType="com.lx.animation.video.Video">
+        SELECT title,vid_url,vid,`show` FROM video where list_id=#{listId} and epi=#{epi} and `show`=1
+    </select>
+    <select id="queryAllVideo" resultType="int">
+        select count(vid) from video
+    </select>
+    <select id="queryAllShow" resultType="int">
+        select count(vid) from video where `show`=1
+    </select>
+    <select id="queryAllListShow">
+        select vid from video where list_id=#{listId} and `show`=0
+    </select>
+    <select id="queryByListId" resultType="com.lx.animation.video.Video">
+        select vid,epi,vid_url,title,`show`,user from video where list_id=#{listId}
+    </select>
+    <select id="queryByListIdUser" resultType="com.lx.animation.video.Video">
+            select vid,epi,`show`,user from video where list_id=#{listId} and (`show`=1 or user=#{user}) order by epi
+    </select>
+    <select id="updateShow">
+        update video set `show`=#{show} where vid=#{vid}
+    </select>
+    <select id="queryUrlByArrId" resultType="java.lang.String">
+        select vid_url from video where vid in
+        <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+    <delete id="deleteByArrId">
+        delete from video where vid in
+        <foreach collection="array" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteById">
+        delete from video where vid=#{vid}
+    </delete>
+    <select id="queryUrlByAdminListId" resultType="java.lang.String">
+        select vid_url from video where list_id=#{listId}
+    </select>
+    <delete id="deleteByListId">
+        delete from video where list_id=#{listId}
+    </delete>
+    <select id="queryCountShowByListId">
+        select count(vid) from video where list_id=#{listId}
+    </select>
+</mapper>
